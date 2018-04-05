@@ -227,8 +227,11 @@
 
       <!-- Index.html related paths and markers -->
 
+      <!-- /obj/<<configuration>>/<<targetframework>>/blazor/ -->
+      <BlazorIndexHtmlOutputDir>$(BlazorIntermediateOutputPath)</BlazorIndexHtmlOutputDir>
+
       <!-- /obj/<<configuration>>/<<targetframework>>/blazor/index.html -->
-      <BlazorIndexHtmlOutputPath>$(BlazorIntermediateOutputPath)$(BlazorOutputIndexHtmlName)</BlazorIndexHtmlOutputPath>
+      <BlazorIndexHtmlOutputPath>$(BlazorIndexHtmlOutputDir)$(BlazorOutputIndexHtmlName)</BlazorIndexHtmlOutputPath>
 
       <!-- /obj/<<configuration>>/<<targetframework>>/blazor/inputs.index.cache -->
       <BlazorBuildIndexInputsCache>$(BlazorIntermediateOutputPath)inputs.index.cache</BlazorBuildIndexInputsCache>
@@ -571,7 +574,6 @@
       <BlazorIndexHtmlInput Include="@(BlazorPackageJsRef->'%(FullPath)')" />
       <BlazorIndexHtmlInput Include="@(BlazorPackageCssRef->'%(FullPath)')" />
       <BlazorIndexHtmlInput Include="@(_BlazorLinkingOption)" />
-      <BlazorIndexHtmlInput Include="@(_BlazorDependencyInput)" />
     </ItemGroup>
 
     <WriteLinesToFile
@@ -589,7 +591,7 @@
   <Target
     Name="_GenerateBlazorIndexHtml"
     DependsOnTargets="_ResolveBlazorIndexHtmlInputs"
-    Inputs="$(BlazorBuildIndexInputsCache);$(BlazorIndexHtml)"
+    Inputs="$(BlazorBuildIndexInputsCache);$(BlazorIndexHtml);@(_BlazorDependencyInput)"
     Outputs="$(BlazorIndexHtmlOutputPath)">
     <ItemGroup>
       <_UnlinkedAppReferencesPaths Include="@(_BlazorDependencyInput)" />
@@ -605,11 +607,16 @@
 
     <ItemGroup Condition="Exists('$(BlazorIndexHtmlOutputPath)')">
       <_BlazorIndex Include="$(BlazorIndexHtmlOutputPath)" />
+      <_BlazorIndexEmbeddedContentFile Include="$(BlazorIndexHtmlOutputDir)_content\**\*.*" />
       <BlazorItemOutput Include="@(_BlazorIndex)">
         <TargetOutputPath>$(ProjectDir)$(OutputPath)dist/%(FileName)%(Extension)</TargetOutputPath>
         <Type>EntryPoint</Type>
       </BlazorItemOutput>
+      <BlazorItemOutput Include="@(_BlazorIndexEmbeddedContentFile)">
+        <TargetOutputPath>$(ProjectDir)$(OutputPath)dist/_content/%(RecursiveDir)%(FileName)%(Extension)</TargetOutputPath>
+      </BlazorItemOutput>
       <FileWrites Include="$(BlazorIndexHtmlOutputPath)" />
+      <FileWrites Include="@(_BlazorIndexEmbeddedContentFile)" />
     </ItemGroup>
 
   </Target>
