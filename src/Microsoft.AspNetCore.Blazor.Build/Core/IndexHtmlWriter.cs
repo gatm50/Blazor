@@ -20,8 +20,6 @@ namespace Microsoft.AspNetCore.Blazor.Build
             string assemblyPath,
             IEnumerable<string> assemblyReferences,
             IEnumerable<string> embeddedResourcesSources,
-            IEnumerable<string> jsReferences,
-            IEnumerable<string> cssReferences,
             bool linkerEnabled,
             string outputPath)
         {
@@ -34,7 +32,7 @@ namespace Microsoft.AspNetCore.Blazor.Build
             var entryPoint = GetAssemblyEntryPoint(assemblyPath);
             var embeddedResources = EmbeddedResourcesProcessor.ExtractEmbeddedResources(
                 assemblyPath, embeddedResourcesSources, Path.GetDirectoryName(outputPath));
-            var updatedContent = GetIndexHtmlContents(template, assemblyName, entryPoint, assemblyReferences, jsReferences, cssReferences, linkerEnabled);
+            var updatedContent = GetIndexHtmlContents(template, assemblyName, entryPoint, assemblyReferences, linkerEnabled);
             var normalizedOutputPath = Normalize(outputPath);
             Console.WriteLine("Writing index to: " + normalizedOutputPath);
             File.WriteAllText(normalizedOutputPath, updatedContent);
@@ -104,8 +102,6 @@ namespace Microsoft.AspNetCore.Blazor.Build
             string assemblyName,
             string assemblyEntryPoint,
             IEnumerable<string> assemblyReferences,
-            IEnumerable<string> jsReferences,
-            IEnumerable<string> cssReferences,
             bool linkerEnabled)
         {
             var resultBuilder = new StringBuilder();
@@ -149,6 +145,7 @@ namespace Microsoft.AspNetCore.Blazor.Build
                                     linkerEnabled,
                                     tag.Attributes);
 
+                                /*
                                 // Emit tags to reference any specified JS/CSS files
                                 AppendReferenceTags(
                                     resultBuilder,
@@ -158,6 +155,7 @@ namespace Microsoft.AspNetCore.Blazor.Build
                                     resultBuilder,
                                     jsReferences,
                                     "<script src=\"{0}\" defer></script>");
+                                */
 
                                 // Set a flag so we know not to emit anything else until the special
                                 // tag is closed

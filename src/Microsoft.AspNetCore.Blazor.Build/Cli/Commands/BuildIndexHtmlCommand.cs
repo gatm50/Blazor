@@ -22,15 +22,6 @@ namespace Microsoft.AspNetCore.Blazor.Build.Cli.Commands
                 "The path to an assembly that may contain embedded resources (typically a referenced assembly in its pre-linked state)",
                 CommandOptionType.MultipleValue);
 
-            // TODO: Remove the jsReferences/cssReferences args and all related code
-            var jsReferences = command.Option("--js",
-                "Adds a <script> tag with the specified 'src' value",
-                CommandOptionType.MultipleValue);
-
-            var cssReferences = command.Option("--css",
-                "Adds a <link rel=stylesheet> tag with the specified 'href' value",
-                CommandOptionType.MultipleValue);
-
             var outputPath = command.Option("--output",
                 "Path to the output file",
                 CommandOptionType.SingleValue);
@@ -58,8 +49,6 @@ namespace Microsoft.AspNetCore.Blazor.Build.Cli.Commands
                         mainAssemblyPath.Value,
                         references.Values.ToArray(),
                         embeddedResourcesSources.Values.ToArray(),
-                        jsReferences.Values.ToArray(),
-                        cssReferences.Values.ToArray(),
                         linkerEnabledFlag.HasValue(),
                         outputPath.Value());
                     return 0;
