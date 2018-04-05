@@ -118,10 +118,11 @@ namespace Microsoft.AspNetCore.Blazor.Build
             while (true)
             {
                 var token = tokenizer.Get();
+                var tokenCharIndex = token.Position.Position - 1;
                 if (resumeOnNextToken)
                 {
                     resumeOnNextToken = false;
-                    currentRangeStartPos = token.Position.Position;
+                    currentRangeStartPos = tokenCharIndex;
                 }
 
                 switch (token.Type)
@@ -134,7 +135,7 @@ namespace Microsoft.AspNetCore.Blazor.Build
                             {
                                 // First, emit the original source text prior to this special tag, since
                                 // we want that to be unchanged
-                                resultBuilder.Append(htmlTemplate, currentRangeStartPos, token.Position.Position - currentRangeStartPos - 1);
+                                resultBuilder.Append(htmlTemplate, currentRangeStartPos, tokenCharIndex - currentRangeStartPos);
 
                                 // Instead of emitting the source text for this special tag, emit a fully-
                                 // configured Blazor boot script tag
