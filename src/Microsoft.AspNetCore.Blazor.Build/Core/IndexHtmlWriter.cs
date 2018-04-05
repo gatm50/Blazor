@@ -19,6 +19,7 @@ namespace Microsoft.AspNetCore.Blazor.Build
             string path,
             string assemblyPath,
             IEnumerable<string> assemblyReferences,
+            IEnumerable<string> embeddedResourcesSources,
             IEnumerable<string> jsReferences,
             IEnumerable<string> cssReferences,
             bool linkerEnabled,
