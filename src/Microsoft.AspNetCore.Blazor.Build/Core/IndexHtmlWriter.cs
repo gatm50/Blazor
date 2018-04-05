@@ -31,7 +31,7 @@ namespace Microsoft.AspNetCore.Blazor.Build
             var assemblyName = Path.GetFileNameWithoutExtension(assemblyPath);
             var entryPoint = GetAssemblyEntryPoint(assemblyPath);
             var embeddedContent = EmbeddedResourcesProcessor.ExtractEmbeddedResources(
-                assemblyPath, embeddedResourcesSources, Path.GetDirectoryName(outputPath));
+                embeddedResourcesSources, Path.GetDirectoryName(outputPath));
             var updatedContent = GetIndexHtmlContents(template, assemblyName, entryPoint, assemblyReferences, embeddedContent, linkerEnabled);
             var normalizedOutputPath = Normalize(outputPath);
             Console.WriteLine("Writing index to: " + normalizedOutputPath);

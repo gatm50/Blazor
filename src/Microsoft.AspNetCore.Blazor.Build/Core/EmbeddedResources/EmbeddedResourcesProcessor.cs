@@ -20,12 +20,11 @@ namespace Microsoft.AspNetCore.Blazor.Build
         /// Finds Blazor-specific embedded resources in the specified assemblies, writes them
         /// to disk, and returns a description of those resources in dependency order.
         /// </summary>
-        /// <param name="entrypointAssemblyPath">The path to the application startup assembly.</param>
         /// <param name="referencedAssemblyPaths">The paths to assemblies that may contain embedded resources.</param>
         /// <param name="outputDir">The path to the directory where output is being written.</param>
         /// <returns>A description of the embedded resources that were written to disk.</returns>
         public static IReadOnlyList<EmbeddedResourceInfo> ExtractEmbeddedResources(
-            string entrypointAssemblyPath, IEnumerable<string> referencedAssemblyPaths, string outputDir)
+            IEnumerable<string> referencedAssemblyPaths, string outputDir)
         {
             // Clean away any earlier state
             var contentDir = Path.Combine(outputDir, ContentSubdirName);
@@ -35,7 +34,6 @@ namespace Microsoft.AspNetCore.Blazor.Build
             }
 
             // First, get an ordered list of AssemblyDefinition instances
-            var entrypointDefinition = AssemblyDefinition.ReadAssembly(entrypointAssemblyPath);
             var referencedAssemblyDefinitions = referencedAssemblyPaths
                 .Where(path => !Path.GetFileName(path).StartsWith("System.", StringComparison.Ordinal)) // Skip System.* because they are never going to contain embedded resources that we want
                 .Select(path => AssemblyDefinition.ReadAssembly(path))
