@@ -11,6 +11,7 @@ namespace Microsoft.AspNetCore.Blazor.Build
 {
     internal class EmbeddedResourcesProcessor
     {
+        const string ContentSubdirName = "_content";
         const string JsFileLogicalNamePrefix = "blazor:js:";
         const string CssFileLogicalNamePrefix = "blazor:css:";
         const string StaticFileLogicalNamePrefix = "blazor:file:";
@@ -21,15 +22,16 @@ namespace Microsoft.AspNetCore.Blazor.Build
         /// </summary>
         /// <param name="entrypointAssemblyPath">The path to the application startup assembly.</param>
         /// <param name="referencedAssemblyPaths">The paths to assemblies that may contain embedded resources.</param>
-        /// <param name="outputDirPath">The path where extracted resources should be written.</param>
+        /// <param name="outputDir">The path to the directory where output is being written.</param>
         /// <returns>A description of the embedded resources that were written to disk.</returns>
         public static IReadOnlyList<EmbeddedResourceInfo> ExtractEmbeddedResources(
-            string entrypointAssemblyPath, IEnumerable<string> referencedAssemblyPaths, string outputDirPath)
+            string entrypointAssemblyPath, IEnumerable<string> referencedAssemblyPaths, string outputDir)
         {
             // Clean away any earlier state
-            if (Directory.Exists(outputDirPath))
+            var contentDir = Path.Combine(outputDir, ContentSubdirName);
+            if (Directory.Exists(contentDir))
             {
-                Directory.Delete(outputDirPath, recursive: true);
+                Directory.Delete(contentDir, recursive: true);
             }
 
             // First, get an ordered list of AssemblyDefinition instances
@@ -42,7 +44,7 @@ namespace Microsoft.AspNetCore.Blazor.Build
 
             // Now process them in turn
             return referencedAssemblyDefinitions
-                .SelectMany(def => ExtractEmbeddedResourcesFromSingleAssembly(def, outputDirPath))
+                .SelectMany(def => ExtractEmbeddedResourcesFromSingleAssembly(def, outputDir))
                 .ToList()
                 .AsReadOnly();
         }
@@ -68,7 +70,7 @@ namespace Microsoft.AspNetCore.Blazor.Build
                 {
                     // Prefix the output path with the assembly name to ensure no clashes
                     // Also be invariant to the OS on which the package was built
-                    name = Path.Combine(assemblyName, EnsureHasPathSeparators(name, Path.DirectorySeparatorChar));
+                    name = Path.Combine(ContentSubdirName, assemblyName, EnsureHasPathSeparators(name, Path.DirectorySeparatorChar));
 
                     // Write the file content to disk, ensuring we don't try to write outside the output root
                     var outputPath = Path.GetFullPath(Path.Combine(outputDirPath, name));
