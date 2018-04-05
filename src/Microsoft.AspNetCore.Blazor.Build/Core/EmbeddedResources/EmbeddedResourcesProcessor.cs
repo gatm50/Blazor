@@ -12,9 +12,13 @@ namespace Microsoft.AspNetCore.Blazor.Build
     internal class EmbeddedResourcesProcessor
     {
         const string ContentSubdirName = "_content";
-        const string JsFileLogicalNamePrefix = "blazor:js:";
-        const string CssFileLogicalNamePrefix = "blazor:css:";
-        const string StaticFileLogicalNamePrefix = "blazor:file:";
+
+        private readonly static Dictionary<string, EmbeddedResourceKind> _knownResourceKindsByNamePrefix = new Dictionary<string, EmbeddedResourceKind>
+        {
+            { "blazor:js:", EmbeddedResourceKind.JavaScript },
+            { "blazor:css:", EmbeddedResourceKind.Css },
+            { "blazor:file:", EmbeddedResourceKind.Static },
+        };
 
         /// <summary>
         /// Finds Blazor-specific embedded resources in the specified assemblies, writes them
@@ -103,25 +107,14 @@ namespace Microsoft.AspNetCore.Blazor.Build
 
         private static bool TryInterpretLogicalName(string logicalName, out EmbeddedResourceKind kind, out string resolvedName)
         {
-            if (logicalName.StartsWith(JsFileLogicalNamePrefix, StringComparison.Ordinal))
+            foreach (var kvp in _knownResourceKindsByNamePrefix)
             {
-                kind = EmbeddedResourceKind.JavaScript;
-                resolvedName = logicalName.Substring(JsFileLogicalNamePrefix.Length);
-                return true;
-            }
-
-            if (logicalName.StartsWith(CssFileLogicalNamePrefix, StringComparison.Ordinal))
-            {
-                kind = EmbeddedResourceKind.Css;
-                resolvedName = logicalName.Substring(CssFileLogicalNamePrefix.Length);
-                return true;
-            }
-
-            if (logicalName.StartsWith(StaticFileLogicalNamePrefix, StringComparison.Ordinal))
-            {
-                kind = EmbeddedResourceKind.Static;
-                resolvedName = logicalName.Substring(StaticFileLogicalNamePrefix.Length);
-                return true;
+                if (logicalName.StartsWith(kvp.Key, StringComparison.Ordinal))
+                {
+                    kind = kvp.Value;
+                    resolvedName = logicalName.Substring(kvp.Key.Length);
+                    return true;
+                }
             }
 
             kind = default;
