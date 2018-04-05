@@ -258,5 +258,35 @@ namespace Test
             AssertCSharpDocumentMatchesBaseline(generated.CodeDocument);
             CompileToAssembly(generated);
         }
+
+        [Fact]
+        public void EventHandler_OnElement_WithString()
+        {
+            // Arrange
+
+            // Act
+            var generated = CompileToCSharp(@"
+<input onclick=""foo"" />");
+
+            // Assert
+            AssertDocumentNodeMatchesBaseline(generated.CodeDocument);
+            AssertCSharpDocumentMatchesBaseline(generated.CodeDocument);
+            CompileToAssembly(generated);
+        }
+
+        [Fact]
+        public void EventHandler_OnElement_WithDelegate()
+        {
+            // Arrange
+
+            // Act
+            var generated = CompileToCSharp(@"
+<input onclick=""x => { }"" />");
+
+            // Assert
+            AssertDocumentNodeMatchesBaseline(generated.CodeDocument);
+            AssertCSharpDocumentMatchesBaseline(generated.CodeDocument);
+            CompileToAssembly(generated);
+        }
     }
 }
