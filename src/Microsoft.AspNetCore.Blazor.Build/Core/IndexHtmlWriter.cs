@@ -30,9 +30,9 @@ namespace Microsoft.AspNetCore.Blazor.Build
             }
             var assemblyName = Path.GetFileNameWithoutExtension(assemblyPath);
             var entryPoint = GetAssemblyEntryPoint(assemblyPath);
-            var embeddedResources = EmbeddedResourcesProcessor.ExtractEmbeddedResources(
+            var embeddedContent = EmbeddedResourcesProcessor.ExtractEmbeddedResources(
                 assemblyPath, embeddedResourcesSources, Path.GetDirectoryName(outputPath));
-            var updatedContent = GetIndexHtmlContents(template, assemblyName, entryPoint, assemblyReferences, linkerEnabled);
+            var updatedContent = GetIndexHtmlContents(template, assemblyName, entryPoint, assemblyReferences, embeddedContent, linkerEnabled);
             var normalizedOutputPath = Normalize(outputPath);
             Console.WriteLine("Writing index to: " + normalizedOutputPath);
             File.WriteAllText(normalizedOutputPath, updatedContent);
@@ -102,6 +102,7 @@ namespace Microsoft.AspNetCore.Blazor.Build
             string assemblyName,
             string assemblyEntryPoint,
             IEnumerable<string> assemblyReferences,
+            IEnumerable<EmbeddedResourceInfo> embeddedContent,
             bool linkerEnabled)
         {
             var resultBuilder = new StringBuilder();
@@ -145,17 +146,15 @@ namespace Microsoft.AspNetCore.Blazor.Build
                                     linkerEnabled,
                                     tag.Attributes);
 
-                                /*
                                 // Emit tags to reference any specified JS/CSS files
                                 AppendReferenceTags(
                                     resultBuilder,
-                                    cssReferences,
+                                    embeddedContent.Where(c => c.Kind == EmbeddedResourceKind.Css).Select(c => c.RelativePath),
                                     "<link rel=\"stylesheet\" href=\"{0}\" />");
                                 AppendReferenceTags(
                                     resultBuilder,
-                                    jsReferences,
+                                    embeddedContent.Where(c => c.Kind == EmbeddedResourceKind.JavaScript).Select(c => c.RelativePath),
                                     "<script src=\"{0}\" defer></script>");
-                                */
 
                                 // Set a flag so we know not to emit anything else until the special
                                 // tag is closed
